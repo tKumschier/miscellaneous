@@ -2,27 +2,39 @@
 # mypy: disable-error-code="import-not-found"
 import logging
 import sys
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Tuple
+from typing import Any, Tuple, TypeVar
 
 from pydantic import BaseModel, Field
 
 try:
     from settings import settings
 except ImportError:
-    print("Settings not imported")
+    print("Logger: Settings not imported")
     pass
+
+propertyReturn = TypeVar("propertyReturn")
+
+
+def classproperty(meth: Callable[..., propertyReturn]) -> propertyReturn:
+    """Access a @classmethod like a @property."""
+    # mypy doesn't understand class properties yet: https://github.com/python/mypy/issues/2563
+    return classmethod(property(meth))  # type: ignore
 
 
 class DEFAULT_VALUES:
     log_level: str = "INFO"
-    save_path: Path = (
-        Path(sys.argv[0]).parents[1]
-        / "logs"
-        / (datetime.now().strftime("%Y.%m.%d_%H.00") + ".log")
-    )
     logger_name: str = "main_logger"
+
+    @classproperty
+    def save_path(_) -> Path:
+        return (
+            Path(sys.argv[0]).parents[1]
+            / "logs"
+            / (datetime.now().strftime("%Y.%m.%d") + ".log")
+        )
 
 
 LOG_LEVELS: dict[str, int] = {
