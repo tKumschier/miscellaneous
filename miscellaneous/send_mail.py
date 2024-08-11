@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from pathlib import Path
 
 
-def send_mail(
+def send_mail(  # pylint: disable=too-many-arguments
     icloud_id: str,
     icloud_pass: str,
     to_address: str,

@@ -122,13 +122,11 @@ class Logger(BaseModel):
         return logger
 
     def replace_handlers(self) -> None:
-        _, _, logger_name = self._get_data_from_settings()
-        for hdlr in self.logger.handlers[:]:
-            if hdlr.name == logger_name:
-                self.logger.removeHandler(hdlr)
+        log_level, self.save_path, logger_name = self._get_data_from_settings()
+        for hdlr in logging.getLogger(logger_name).handlers[:]:
+            self.logger.removeHandler(hdlr)
 
-        log_level, save_path, logger_name = self._get_data_from_settings()
-        self._get_logger(log_level, save_path, logger_name)
+        self._get_logger(log_level, self.save_path, logger_name)
 
     def critical(self, *args: Any) -> None:
         if self.log_level_is_on["CRITICAL"]:
