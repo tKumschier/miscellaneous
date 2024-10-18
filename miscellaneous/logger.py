@@ -122,6 +122,7 @@ class Logger(BaseModel):
         return logger
 
     def replace_handlers(self) -> None:
+        self.problem_occurred = False
         log_level, self.save_path, logger_name = self._get_data_from_settings()
         for hdlr in logging.getLogger(logger_name).handlers[:]:
             self.logger.removeHandler(hdlr)
